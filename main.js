@@ -2,8 +2,8 @@ const express = require('express');
 const mysql2 = require('mysql2/promise');
 
 const pool = mysql2.createPool({  //подкючение БД
-	host: 'localhost',
-	user: 'root',
+	host: '80.87.97.38',
+	user: 'user1',
 	database: 'base_1',
 	password: '123451',
 }); 
@@ -24,6 +24,6 @@ app.get('/',function(req,res){
 	});
 });
 
-app.listen(3000,function() {      //запуск сервера
+app.listen(80,function() {      //запуск сервера
 	console.log('server started');
 });
