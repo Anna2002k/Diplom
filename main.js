@@ -17,7 +17,7 @@ app.get('/',function(req,res){
 		<html>
 			<body>
 				<ul>
-					${tabl1.map(nomber_name => `<li>${abonent.name}</li>`).join('')}
+					${tabl1.map(nomber_name => `<li>${nomber_name.name}</li>`).join('')}
 				</ul>
 			</body>
 		</html>`);
