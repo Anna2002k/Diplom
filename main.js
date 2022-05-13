@@ -4,20 +4,20 @@ const mysql2 = require('mysql2/promise');
 const pool = mysql2.createPool({  //подкючение БД
 	host: 'localhost',
 	user: 'root',
-	database: 'phone_book',
-	password: '',
+	database: 'base_1',
+	password: '123451',
 }); 
 
 const app = express();
 
 app.get('/',function(req,res){
-	pool.query('SELECT * FROM abonents').then(function(data) {
-		const abonents = data[0];
+	pool.query('SELECT * FROM tabl1').then(function(data) {
+		const tabl1 = data[0];
 		res.send(`<!DOCTYPE html>
 		<html>
 			<body>
 				<ul>
-					${abonents.map(abonent => `<li>${abonent.name}</li>`).join('')}
+					${tabl1.map(nomber_name => `<li>${abonent.name}</li>`).join('')}
 				</ul>
 			</body>
 		</html>`);
