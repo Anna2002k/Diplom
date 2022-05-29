@@ -12,8 +12,8 @@ const pool = mysql2.createPool({  //подкючение БД
 const app = express();
 
 app.use(bodyParser.urlencoded());
-
-app.get('/', async function(req, res) {
+//////////////// страница содержание////////////////
+app.get('/', async function(req, res) {            
 	const [content] = await pool.query('SELECT * FROM content');
 	res.send(`<!DOCTYPE html>
 	<html>
@@ -41,12 +41,12 @@ app.get('/', async function(req, res) {
 			<hr>
 			<h6><span>Содержание |</span> <a href="/search">Поиск</a></h6>
 			<ul>
-				${content.map(thema => `<div><a href="/content-thema/${thema.id}">${thema.theme}</a></div>`).join('')}
+				${content.map(thema => `<div><a href="/content-thema/${thema.id}">${thema.num_theme} ${thema.theme}</a></div>`).join('')}
 			</ul>
 		</body>
 	</html>`);
 });
-/////////////
+/////////////вывод содержимого темы///////////////////////
 app.get('/content-thema/:theme_id', async function(req, res) {
 	const { theme_id } = req.params;
 	const [themes] = await pool.query('SELECT * FROM themes WHERE theme_id = ?', theme_id);
@@ -82,11 +82,12 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 		<body>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<p><button><a href="/thema/${theme_id}" >Редактировать название темы</a></button></p>	
-		<h1>Тема: ${thema.theme} </h1>
+		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
 			<h6><a href="/">Содержание</a> </h6>
 			<ul class="themes">
 			${themes.map(contents => `<div>${contents.text}  <p><a href="/contents/${contents.id}">Редактировать содержимое темы</a></p></div>`).join('')}
 			</ul>
+
 			</body>
 	</html>`);
 });
@@ -119,11 +120,11 @@ app.get('/thema/:theme_id', async function(req, res) {
 		<body>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		
-		<h1>Редактирование темы: ${thema.theme} <form method="post" action="/thema/${theme_id}/remove"></form></h1>
+		<h1>Редактирование темы: ${thema.num_theme}  ${thema.theme}<form method="post" action="/thema/${theme_id}/remove"></form></h1>
 		<h6><a href="/">Содержание</a></h6>
 		<form method="post" action="/thema/${theme_id}">
 			<div class="mb-3">	
-				<textarea class="form-control" id="exampleFormControlTextarea1" rows="5" type="text" name="theme" placeholder="Название темы" >${thema.theme}</textarea>
+				<textarea class="form-control" id="exampleFormControlTextarea1" rows="5" type="text" name="theme" placeholder="Название темы" > ${thema.theme}</textarea>
 			</div>
 			<button type="submit">Сохранить</button>
 		</form>
@@ -134,13 +135,15 @@ app.get('/thema/:theme_id', async function(req, res) {
 app.post('/thema/:theme_id', async function(req, res) {
 	const { theme_id } = req.params;
 	const { theme } = req.body;
-	
+
 	await pool.query('UPDATE content SET ? WHERE id = ?', [{
 		theme,
 	}, theme_id]);
 	
+
 	res.redirect(`/content-thema/${theme_id}`);
 });
+
 ///////////редактирование содержимого темы//////
 app.post('/contents/:contents_id', async function(req, res) {
 	const { contents_id } = req.params;
@@ -183,7 +186,7 @@ app.get('/contents/:contents_id', async function(req, res) {
 	</head>
 		<body>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-		<h1>Редактирование содержимого темы ${thema.theme} <form method="post" action="/contents/${contents_id}/remove"></form></h1>
+		<h1>Редактирование содержимого темы ${thema.num_theme} ${thema.theme} <form method="post" action="/contents/${contents_id}/remove"></form></h1>
 		<h6><a href="/">Содержание</a></h6>
 		<form method="post" action="/contents/${contents_id}">
 		<div class="mb-3">	
@@ -194,12 +197,11 @@ app.get('/contents/:contents_id', async function(req, res) {
 		</body>
 	</html>`);
 });
-////////////////
+//////////////поиск///////////////////////////////
 app.get('/search', async function(req, res) {
 	const thema_query = req.query.thema_query || '';
-	const [themes] = await pool.query(`SELECT themes.text, content.theme
+	const [content] = await pool.query(`SELECT *
 		FROM content
-		JOIN themes ON themes.theme_id = content.id
 		WHERE content.theme LIKE ?
 	`, thema_query + '%');
 	res.send(`<!DOCTYPE html>
@@ -235,8 +237,8 @@ app.get('/search', async function(req, res) {
 				<input type="text" name="thema_query" placeholder="Поисковой запрос" value="${thema_query ? thema_query : ''}"/>
 				<button type="submit">Применить</button>
 			</form>
-			Найдено: ${themes.length}
-				${themes.map(contents => `<div>${contents.theme}</div>`).join('')}
+			Найдено: ${content.length}
+				${content.map(contents => `<div><a href="/content-thema/${contents.id}">${contents.num_theme}${contents.theme}</a></div>`).join('')}
 			</ul>
 		</body>
 	</html>`);
@@ -244,19 +246,17 @@ app.get('/search', async function(req, res) {
 
 app.get('/search-dynamic-data', async function(req, res) {
 	const thema_query = req.query.thema_query || '';
-	const [themes] = await pool.query(`SELECT themes.text, content.theme
+	const [content] = await pool.query(`SELECT *
 		FROM content
-		JOIN themes ON themes.theme_id = content.id
 		WHERE content.theme LIKE ?
 	`, thema_query + '%');
-	res.json(themes);
+	res.json(content);
 });
 
 app.get('/search-dynamic', async function(req, res) {
 	const thema_query = req.query.thema_query || '';
-	const [themes] = await pool.query(`SELECT themes.text, content.theme
+	const [content] = await pool.query(`SELECT *
 		FROM content
-		JOIN themes ON themes.theme_id = content.id
 		WHERE content.theme LIKE ?
 	`, thema_query + '%');
 	res.send(`<!DOCTYPE html>
@@ -284,9 +284,9 @@ app.get('/search-dynamic', async function(req, res) {
 			<script>
 			async function getNewData(target) {
 				const data = await fetch('/search-dynamic-data?thema_query=' + target.value);
-				const themes = await data.json();
-				document.querySelector('ul').innerHTML = themes.map(contents => \`<li>\${contents.theme} \${contents.text}</li>\`).join('');
-				document.querySelector('.count').innerHTML = themes.length;
+				const content = await data.json();
+				document.querySelector('ul').innerHTML = content.map(contents => \`<li>\${contents.theme} </li>\`).join('');
+				document.querySelector('.count').innerHTML = content.length;
 			}
 			</script>
 			<h1>Поиск темы</h1>
@@ -296,11 +296,12 @@ app.get('/search-dynamic', async function(req, res) {
 				<input type="text" name="thema_query" oninput="javascript:getNewData(this)" placeholder="Поисковой запрос" value="${thema_query ? thema_query : ''}"/>
 				<button type="submit">Применить</button>
 			</form>
-			Найдено: <span class="count">${themes.length}</span>
-				${themes.map(contents => `<li>${contents.theme} ${contents.text}</li>`).join('')}
+			Найдено: <span class="count">${content.length}</span>
+				${content.map(contents => `<div><a href="/content-thema/${contents.id}">${contents.num_theme}${contents.theme}</a></div>`).join('')}
 		</body>
 	</html>`);
 });
+
 
 
 
