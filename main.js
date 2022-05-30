@@ -49,8 +49,17 @@ app.get('/', async function(req, res) {
 /////////////вывод содержимого темы///////////////////////
 app.get('/content-thema/:theme_id', async function(req, res) {
 	const { theme_id } = req.params;
-	const [themes] = await pool.query('SELECT * FROM themes WHERE theme_id = ?', theme_id);
-	const [[thema]] = await pool.query('SELECT * FROM content WHERE id = ?', theme_id);
+	let [themes] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ${theme_id})and(time_vers = (select max(time_vers) from themes where theme_id= ${theme_id}))`);
+	const time = new Date(req.query.time*1).toISOString().slice(0, 19).replace('T', ' ');
+	const [[thema]] = await pool.query(`SELECT * FROM content WHERE id = ${theme_id}`);
+	
+	if (req.query !== undefined)
+	{
+		 //req.query.time;
+		  [themes] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ?)and(time_vers = ?)`,[theme_id,time]);
+	}
+
+	
 	
 	res.send(`<!DOCTYPE html>
 	<html>
@@ -83,15 +92,17 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<p><button><a href="/thema/${theme_id}" >Редактировать название темы</a></button></p>	
 		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
-			<h6><a href="/">Содержание</a> </h6>
+			<h6><a href="/">Содержание</a> <a href="/thema_vers/${theme_id}">Версии страницы</a></h6>
+			
 			<ul class="themes">
-			${themes.map(contents => `<div>${contents.text}  <p><a href="/contents/${contents.id}">Редактировать содержимое темы</a></p></div>`).join('')}
+			<p><a href="/contents/${theme_id }">Редактировать содержимое темы</a></p>
+			${themes.map(contents => `<div>${contents.text}${contents.time}  </div>`).join('')}
 			</ul>
 
 			</body>
 	</html>`);
 });
-////////////
+////////////редактирование темы/////////////////////
 
 app.get('/thema/:theme_id', async function(req, res) {
 	const { theme_id } = req.params;
@@ -150,20 +161,24 @@ app.post('/contents/:contents_id', async function(req, res) {
 	let { text } = req.body;
 	
 	
-	const [[contents]] = await pool.query('SELECT * FROM themes WHERE id = ?', contents_id);
-	
-	await pool.query('UPDATE themes SET ? WHERE id = ?', [{
-		text,
-	}, contents_id]);
+	await pool.query(`INSERT INTO themes (theme_id, text, time_vers) VALUES (?, ?, now(), comment)`,[contents_id,text,comment]);
+	const [[contents]] = await pool.query(`SELECT * FROM themes WHERE theme_id = ${contents_id}`);
 	
 	res.redirect(`/content-thema/${contents.theme_id}`);
 });
-/////////////////////
+/////////////////////редактирование содержимого темы//////////////////////
 app.get('/contents/:contents_id', async function(req, res) {
 	const { contents_id } = req.params;
-	const [[contents]] = await pool.query('SELECT * FROM themes WHERE id = ?', contents_id);
-	const [[thema]] = await pool.query('SELECT * FROM content WHERE id = ?', contents.theme_id);
+	let [[contents]] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ${contents_id})and(time_vers = (select max(time_vers) from themes where theme_id= ${contents_id}))`);
+	const [[thema]] = await pool.query(`SELECT * FROM content WHERE id = ${contents_id}`);
 	
+	if (contents==undefined)
+	{
+		await pool.query(`INSERT INTO themes (theme_id, text, time_vers) VALUES (${contents_id}, "Введите содержимое темы", now())`);
+
+		[[contents]] = await pool.query('SELECT * FROM themes WHERE theme_id = ? ', contents_id);
+
+	}
 	res.send(`<!DOCTYPE html>
 	<html>
 	<head>
@@ -190,8 +205,9 @@ app.get('/contents/:contents_id', async function(req, res) {
 		<h6><a href="/">Содержание</a></h6>
 		<form method="post" action="/contents/${contents_id}">
 		<div class="mb-3">	
-			<textarea class="form-control" id="exampleFormControlTextarea1" rows="25" type="text" name="text" placeholder="Содержимое темы"  >${contents.text}</textarea>
-		</div>	
+			<textarea class="form-control" id="exampleFormControlTextarea1" rows="25" type="text" name="text"  >${contents.text}</textarea>
+			<textarea class="form-control" id="exampleFormControlTextarea2" rows="4" type="text" name="comment" > ${contents.comment}</textarea>
+			</div>	
 			<button type="submit">Сохранить</button>
 		</form>
 		</body>
@@ -203,7 +219,7 @@ app.get('/search', async function(req, res) {
 	const [content] = await pool.query(`SELECT *
 		FROM content
 		WHERE content.theme LIKE ?
-	`, thema_query + '%');
+	`,'%' + thema_query + '%');
 	res.send(`<!DOCTYPE html>
 	<html>
 	<head>
@@ -249,7 +265,7 @@ app.get('/search-dynamic-data', async function(req, res) {
 	const [content] = await pool.query(`SELECT *
 		FROM content
 		WHERE content.theme LIKE ?
-	`, thema_query + '%');
+	`,'%' + thema_query + '%');
 	res.json(content);
 });
 
@@ -258,7 +274,7 @@ app.get('/search-dynamic', async function(req, res) {
 	const [content] = await pool.query(`SELECT *
 		FROM content
 		WHERE content.theme LIKE ?
-	`, thema_query + '%');
+	`,'%' + thema_query + '%');
 	res.send(`<!DOCTYPE html>
 	<html>
 	<head>
@@ -302,7 +318,50 @@ app.get('/search-dynamic', async function(req, res) {
 	</html>`);
 });
 
+app.get('/thema_vers/:theme_id', async function(req, res) {
+	const { theme_id } = req.params;
+	const [themes] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ${theme_id})`);
+	const [[thema]] = await pool.query(`SELECT * FROM content WHERE id = ${theme_id}`)
 
+	res.send(`<!DOCTYPE html>
+	<html>
+	<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+	<style >
+	h1 {
+		margin-left: 30px;
+		margin-top: 0%;
+	}
+	ul {
+		border: 1px solid #a7d7f9;
+	}
+	h6 {
+		margin-left: 30px;
+		margin-bottom: 0%;
+		margin-right: 83%;
+    	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
+    	padding: 10px;
+	}
+	p {
+		text-align:right;
+		margin-bottom: 0%;
+		margin-right: 2%;
+	}
+	</style>
+	</head>
+		<body>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
+			<h6><a href="/">Содержание</a> <a href="/thema_vers/${theme_id}">Версии страницы</a></h6>
+			
+			<ul class="themes">
+			${themes.map(contents => `<div><a href="/content-thema/${thema.id}?time=${Date.parse(contents.time_vers)}">${contents.time_vers} </a>${contents.comment} </div>`).join('')}
+			</ul>
+			
+			</body>
+	</html>`);
+});	
 
 
 app.listen(80,function() {      //запуск сервера
