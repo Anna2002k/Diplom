@@ -50,16 +50,15 @@ app.get('/', async function(req, res) {
 app.get('/content-thema/:theme_id', async function(req, res) {
 	const { theme_id } = req.params;
 	let [themes] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ${theme_id})and(time_vers = (select max(time_vers) from themes where theme_id= ${theme_id}))`);
-	const time = new Date(req.query.time*1).toISOString().slice(0, 19).replace('T', ' ');
+	//var time = new Date(req.query.time*1).toISOString().slice(0, 19).replace('T', ' ');
 	const [[thema]] = await pool.query(`SELECT * FROM content WHERE id = ${theme_id}`);
 	
-	if (req.query !== undefined)
+	if (!!req.query && !!req.query.time)
 	{
-		 //req.query.time;
-		  [themes] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ?)and(time_vers = ?)`,[theme_id,time]);
+		var time = new Date(req.query.time*1+18000000).toISOString().slice(0, 19).replace('T', ' '); //req.query.time;
+		[themes] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ?)and(time_vers = ?)`,[theme_id,time]);
 	}
-
-	
+	//const[tim] = new Date(themes.time_vers*1).toISOString().slice(0, 19).replace('T', ' ');
 	
 	res.send(`<!DOCTYPE html>
 	<html>
@@ -96,7 +95,7 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 			
 			<ul class="themes">
 			<p><a href="/contents/${theme_id }">Редактировать содержимое темы</a></p>
-			${themes.map(contents => `<div>${contents.text}${contents.time}  </div>`).join('')}
+			${themes.map(contents => `<div>${contents.text}${contents.time_vers}  </div>`).join('')}
 			</ul>
 
 			</body>
@@ -159,9 +158,9 @@ app.post('/thema/:theme_id', async function(req, res) {
 app.post('/contents/:contents_id', async function(req, res) {
 	const { contents_id } = req.params;
 	let { text } = req.body;
+	let { comment } = req.body;
 	
-	
-	await pool.query(`INSERT INTO themes (theme_id, text, time_vers) VALUES (?, ?, now(), comment)`,[contents_id,text,comment]);
+	await pool.query(`INSERT INTO themes (theme_id, text, time_vers, comment) VALUES (?, ?, now(), ?)`,[contents_id,text,comment]);
 	const [[contents]] = await pool.query(`SELECT * FROM themes WHERE theme_id = ${contents_id}`);
 	
 	res.redirect(`/content-thema/${contents.theme_id}`);
@@ -216,11 +215,19 @@ app.get('/contents/:contents_id', async function(req, res) {
 //////////////поиск///////////////////////////////
 app.get('/search', async function(req, res) {
 	const thema_query = req.query.thema_query || '';
-	const [content] = await pool.query(`SELECT *
-		FROM content
-		WHERE content.theme LIKE ?
+	const [themes] = await pool.query(`SELECT *
+		FROM themes
+		WHERE themes.text LIKE ?
 	`,'%' + thema_query + '%');
-	res.send(`<!DOCTYPE html>
+	//const [[thema]] = await pool.query(`SELECT * FROM content WHERE id = ${themes.theme_id}`);
+	
+		
+	//const dannie = themes.text.textContent;  
+	//const dannie2 = thema_query.textContent;
+  //  if (dannie.indexOf(dannie2) != -1)
+	
+
+	/*res.send(`<!DOCTYPE html>
 	<html>
 	<head>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -245,7 +252,7 @@ app.get('/search', async function(req, res) {
 	</head>
 		<body>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-			<h1>Поиск темы</h1>			
+			<h1>Поиск по темам</h1>			
 			<hr>
 			<h6><a href="/">Содержание |</a> <span>Поиск</span></h6>
 			<ul>
@@ -253,35 +260,23 @@ app.get('/search', async function(req, res) {
 				<input type="text" name="thema_query" placeholder="Поисковой запрос" value="${thema_query ? thema_query : ''}"/>
 				<button type="submit">Применить</button>
 			</form>
-			Найдено: ${content.length}
-				${content.map(contents => `<div><a href="/content-thema/${contents.id}">${contents.num_theme}${contents.theme}</a></div>`).join('')}
+			Найдено: ${themes.length}
+				
+				${themes.map(contents => `<div>${textmodify(contents.text,thema_query)}</div>`).join('')}
+				
 			</ul>
 		</body>
-	</html>`);
-});
+	</html>`);*/
 
-app.get('/search-dynamic-data', async function(req, res) {
-	const thema_query = req.query.thema_query || '';
-	const [content] = await pool.query(`SELECT *
-		FROM content
-		WHERE content.theme LIKE ?
-	`,'%' + thema_query + '%');
-	res.json(content);
-});
-
-app.get('/search-dynamic', async function(req, res) {
-	const thema_query = req.query.thema_query || '';
-	const [content] = await pool.query(`SELECT *
-		FROM content
-		WHERE content.theme LIKE ?
-	`,'%' + thema_query + '%');
 	res.send(`<!DOCTYPE html>
 	<html>
 	<head>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 	<style >
 	h1 {
 		margin-left: 30px;
+		margin-top: 0%;
 	}
 	ul {
 		border: 1px solid #a7d7f9;
@@ -293,30 +288,43 @@ app.get('/search-dynamic', async function(req, res) {
     	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
     	padding: 10px;
 	}
+	p {
+		text-align:right;
+		margin-bottom: 0%;
+		margin-right: 2%;
+	}
 	</style>
 	</head>
 		<body>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-			<script>
-			async function getNewData(target) {
-				const data = await fetch('/search-dynamic-data?thema_query=' + target.value);
-				const content = await data.json();
-				document.querySelector('ul').innerHTML = content.map(contents => \`<li>\${contents.theme} </li>\`).join('');
-				document.querySelector('.count').innerHTML = content.length;
-			}
-			</script>
-			<h1>Поиск темы</h1>
-			<h6><a href="/">Содержание |</a> <span>Поиск</span></h6>
-			<hr/>
+		<h1>Тема: </h1>
+			<h6><a href="/">Содержание</a> </h6>
+			<ul>
 			<form method="get" action="/search">
-				<input type="text" name="thema_query" oninput="javascript:getNewData(this)" placeholder="Поисковой запрос" value="${thema_query ? thema_query : ''}"/>
-				<button type="submit">Применить</button>
-			</form>
-			Найдено: <span class="count">${content.length}</span>
-				${content.map(contents => `<div><a href="/content-thema/${contents.id}">${contents.num_theme}${contents.theme}</a></div>`).join('')}
-		</body>
+			<input type="text" name="thema_query" placeholder="Поисковой запрос" value="${thema_query ? thema_query : ''}"/>
+			<button type="submit">Применить</button>
+		    </form>
+			${themes.map(contents => `<div>${textmodify(contents.text,thema_query)}</div>`).join('')}
+			</ul>
+			</body>
 	</html>`);
+
 });
+
+function textmodify (text,sub)
+{
+	const pos_start = text.indexOf(sub);
+	const pos_end = pos_start + sub.length + 6;
+	const tmp1 = insert(text,'<span>',pos_start);
+	const result = insert(tmp1,'</span>',pos_end); 
+	return result;
+}
+
+function insert(str, substr, pos) {
+	var array = str.split('');
+	array.splice(pos, 0, substr);
+	return array.join('');
+  }
 
 app.get('/thema_vers/:theme_id', async function(req, res) {
 	const { theme_id } = req.params;
