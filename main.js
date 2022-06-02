@@ -54,7 +54,7 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 	
 	if (!!req.query && !!req.query.time)
 	{
-		var time = new Date(req.query.time*1+18000000).toISOString().slice(0, 19).replace('T', ' '); //req.query.time;
+		var time = new Date(req.query.time*1).toISOString().slice(0, 19).replace('T', ' '); //req.query.time;
 		[themes] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ?)and(time_vers = ?)`,[theme_id,time]);
 	}
 	
