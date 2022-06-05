@@ -22,30 +22,45 @@ app.get('/', async function(req, res) {
 	<style >
 	h1 {
 		margin-left: 30px;
+		margin-bottom: 20px;
 	}
 	ul {
 		border: 1px solid #a7d7f9;
+		padding-top: 8px;
+		margin-left: 10px;
 	}
 	h6 {
-		margin-left: 30px;
+		margin-left: 10px;
 		margin-bottom: 0%;
 		margin-right: 83%;
-    	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
-    	padding: 10px;
 	}
 	a {
-		color: #030303;  
+		color: #221fde; 
+		text-decoration: none; 
 	   }
 	a:visited {
-		color: #e57582; 
-	   }   
+		color: #500c7a; 
+	   }  
+	a:hover {
+		text-decoration: underline;
+	   }    
+	span {
+		padding-top: 1.25em;  
+		padding-left: 8px;
+		padding-right: 8px;
+		cursor: pointer; 
+		background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); 
+		background-repeat: no-repeat;
+		background-repeat-x: no-repeat;
+		background-repeat-y: no-repeat; 
+		background-size: 1px 100%;
+	}
 	</style>
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 			<h1>Основы теоретической физики</h1>
-			<hr>
-			<h6><span>Содержание |</span> <a href="/search">Поиск</a></h6>
+			<h6><span>Содержание </span> <a style="color: #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;" href="/search">Поиск</a><span></span></h6>
 			<ul>
 				${content.map(thema => `<div><a href="/content-thema/${thema.id}">${thema.num_theme} ${thema.theme}</a></div>`).join('')}
 			</ul>
@@ -89,16 +104,22 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 		margin-bottom: 0%;
 		margin-right: 2%;
 	}
+	a:visited {
+		color: #500c7a; 
+	   }  
+	a:hover {
+		text-decoration: underline;
+	   } 
 	</style>
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-		<p><button><a href="/thema/${theme_id}" >Редактировать название темы</a></button></p>	
+		<p><button><a style="color: #221fde" href="/thema/${theme_id}" >Редактировать название темы</a></button></p>	
 		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
-			<h6><a href="/">Содержание</a> <a href="/thema_vers/${theme_id}">Версии страницы</a></h6>
+			<h6><a style="color: #221fde" href="/">Содержание</a> <a style="color: #221fde" href="/thema_vers/${theme_id}">Версии страницы</a></h6>
 			
 			<ul class="themes">
-			<p><a href="/contents/${theme_id }">Редактировать содержимое темы</a></p>
+			<p><a style="color: #221fde" href="/contents/${theme_id }">Редактировать содержимое темы</a></p>
 			${themes.map(contents => `<div>${contents.text}${contents.time_vers}  </div>`).join('')}
 			</ul>
 
@@ -129,13 +150,19 @@ app.get('/thema/:theme_id', async function(req, res) {
     	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
     	padding: 10px;
 	}
+	a:visited {
+		color: #500c7a; 
+	   }  
+	a:hover {
+		text-decoration: underline;
+	   } 
 	</style>
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		
 		<h1>Редактирование темы: ${thema.num_theme}  ${thema.theme}<form method="post" action="/thema/${theme_id}/remove"></form></h1>
-		<h6><a href="/">Содержание</a></h6>
+		<h6><a style="color: #221fde" href="/">Содержание</a></h6>
 		<form method="post" action="/thema/${theme_id}">
 			<div class="mb-3">	
 				<textarea class="form-control" id="exampleFormControlTextarea1" rows="5" type="text" name="theme" placeholder="Название темы" > ${thema.theme}</textarea>
@@ -200,12 +227,18 @@ app.get('/contents/:contents_id', async function(req, res) {
     	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
     	padding: 10px;
 	}
+	a:visited {
+		color: #500c7a; 
+	   }  
+	a:hover {
+		text-decoration: underline;
+	   } 
 	</style>
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<h1>Редактирование содержимого темы ${thema.num_theme} ${thema.theme} <form method="post" action="/contents/${contents_id}/remove"></form></h1>
-		<h6><a href="/">Содержание</a></h6>
+		<h6><a style="color: #221fde" href="/">Содержание</a></h6>
 		<form method="post" action="/contents/${contents_id}">
 		<div class="mb-3">	
 			<textarea class="form-control" id="exampleFormControlTextarea1" rows="25" type="text" name="text"  >${contents.text}</textarea>
@@ -250,11 +283,17 @@ app.get('/search', async function(req, res) {
 		margin-bottom: 0%;
 		margin-right: 2%;
 	}
+	a:visited {
+		color: #500c7a; 
+	   }  
+	a:hover {
+		text-decoration: underline;
+	   } 
 	</style>
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-			<h6><a href="/">Содержание</a> </h6>
+			<h6><a style="color: #221fde" href="/">Содержание</a> <span>Поиск</span></h6>
 			<ul>
 			<form method="get" action="/search">
 			<input type="text" name="thema_query" placeholder="Поисковой запрос" value="${thema_query ? thema_query : ''}"/>
@@ -312,12 +351,18 @@ app.get('/thema_vers/:theme_id', async function(req, res) {
 		margin-bottom: 0%;
 		margin-right: 2%;
 	}
+	a:visited {
+		color: #500c7a; 
+	   }  
+	a:hover {
+		text-decoration: underline;
+	   } 
 	</style>
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
-			<h6><a href="/">Содержание</a> <a href="/thema_vers/${theme_id}">Версии страницы</a></h6>
+			<h6><a style="color: #221fde" href="/">Содержание</a> <a style="color: #221fde" href="/thema_vers/${theme_id}">Версии страницы</a></h6>
 			
 			<ul class="themes">
 			${themes.map(contents => `<div><a href="/content-thema/${thema.id}?time=${Date.parse(contents.time_vers)}">${contents.time_vers} </a>${contents.comment} </div>`).join('')}
