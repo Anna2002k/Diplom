@@ -33,9 +33,15 @@ app.get('/', async function(req, res) {
     	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
     	padding: 10px;
 	}
+	a {
+		color: #030303;  
+	   }
+	a:visited {
+		color: #e57582; 
+	   }   
 	</style>
 	</head>
-		<body>
+		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 			<h1>Основы теоретической физики</h1>
 			<hr>
@@ -85,7 +91,7 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 	}
 	</style>
 	</head>
-		<body>
+		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<p><button><a href="/thema/${theme_id}" >Редактировать название темы</a></button></p>	
 		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
@@ -125,7 +131,7 @@ app.get('/thema/:theme_id', async function(req, res) {
 	}
 	</style>
 	</head>
-		<body>
+		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		
 		<h1>Редактирование темы: ${thema.num_theme}  ${thema.theme}<form method="post" action="/thema/${theme_id}/remove"></form></h1>
@@ -196,7 +202,7 @@ app.get('/contents/:contents_id', async function(req, res) {
 	}
 	</style>
 	</head>
-		<body>
+		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<h1>Редактирование содержимого темы ${thema.num_theme} ${thema.theme} <form method="post" action="/contents/${contents_id}/remove"></form></h1>
 		<h6><a href="/">Содержание</a></h6>
@@ -246,7 +252,7 @@ app.get('/search', async function(req, res) {
 	}
 	</style>
 	</head>
-		<body>
+		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 			<h6><a href="/">Содержание</a> </h6>
 			<ul>
@@ -308,7 +314,7 @@ app.get('/thema_vers/:theme_id', async function(req, res) {
 	}
 	</style>
 	</head>
-		<body>
+		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
 			<h6><a href="/">Содержание</a> <a href="/thema_vers/${theme_id}">Версии страницы</a></h6>
