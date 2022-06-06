@@ -95,7 +95,6 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 	h6 {
 		margin-left: 30px;
 		margin-bottom: 0%;
-		margin-right: 83%;
     	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
     	padding: 10px;
 	}
@@ -342,7 +341,6 @@ app.get('/thema_vers/:theme_id', async function(req, res) {
 	h6 {
 		margin-left: 30px;
 		margin-bottom: 0%;
-		margin-right: 83%;
     	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
     	padding: 10px;
 	}
