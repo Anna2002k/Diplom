@@ -75,7 +75,7 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 	
 	if (!!req.query && !!req.query.time)
 	{
-		var time = new Date(req.query.time*1).toISOString().slice(0, 19).replace('T', ' '); //req.query.time;
+		var time = new Date(req.query.time*1).toISOString().slice(0, 19).replace('T', ' '); 
 		[themes] = await pool.query(`SELECT * FROM themes WHERE (theme_id = ?)and(time_vers = ?)`,[theme_id,time]);
 	}
 	
@@ -87,22 +87,26 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 	<style >
 	h1 {
 		margin-left: 30px;
-		margin-top: 0%;
+		margin-bottom: 20px;
 	}
 	ul {
 		border: 1px solid #a7d7f9;
+		padding-top: 8px;
+		margin-left: 10px;
 	}
 	h6 {
-		margin-left: 30px;
+		margin-left: 10px;
 		margin-bottom: 0%;
-    	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
-    	padding: 10px;
 	}
 	p {
 		text-align:right;
 		margin-bottom: 0%;
 		margin-right: 2%;
 	}
+	a {
+		color: #221fde; 
+		text-decoration: none; 
+	   }
 	a:visited {
 		color: #500c7a; 
 	   }  
@@ -113,9 +117,9 @@ app.get('/content-thema/:theme_id', async function(req, res) {
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-		<p><button><a style="color: #221fde" href="/thema/${theme_id}" >Редактировать название темы</a></button></p>	
+		<p><a style="color: #221fde" href="/thema/${theme_id}" >Редактировать название темы</a></p>	
 		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
-			<h6><a style="color: #221fde" href="/">Содержание</a> <a style="color: #221fde" href="/thema_vers/${theme_id}">Версии страницы</a></h6>
+			<h6><a style="color: #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;" href="/">Содержание</a> <a style="color: #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;" href="/thema_vers/${theme_id}">Версии страницы</a><a <a style="color: #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;"></a></h6>
 			
 			<ul class="themes">
 			<p><a style="color: #221fde" href="/contents/${theme_id }">Редактировать содержимое темы</a></p>
@@ -138,17 +142,21 @@ app.get('/thema/:theme_id', async function(req, res) {
 	<style >
 	h1 {
 		margin-left: 30px;
+		margin-bottom: 20px;
 	}
-	ul {
+	textarea {
 		border: 1px solid #a7d7f9;
+		padding-top: 8px;
+		margin-left: 10px;
 	}
 	h6 {
-		margin-left: 30px;
+		margin-left: 10px;
 		margin-bottom: 0%;
-		margin-right: 83%;
-    	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
-    	padding: 10px;
 	}
+	a {
+		color: #221fde; 
+		text-decoration: none; 
+	   }
 	a:visited {
 		color: #500c7a; 
 	   }  
@@ -161,7 +169,7 @@ app.get('/thema/:theme_id', async function(req, res) {
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		
 		<h1>Редактирование темы: ${thema.num_theme}  ${thema.theme}<form method="post" action="/thema/${theme_id}/remove"></form></h1>
-		<h6><a style="color: #221fde" href="/">Содержание</a></h6>
+		<h6><a style="color: #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;" href="/">Содержание</a><a style="padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;"></a></h6>
 		<form method="post" action="/thema/${theme_id}">
 			<div class="mb-3">	
 				<textarea class="form-control" id="exampleFormControlTextarea1" rows="5" type="text" name="theme" placeholder="Название темы" > ${thema.theme}</textarea>
@@ -215,17 +223,21 @@ app.get('/contents/:contents_id', async function(req, res) {
 	<style >
 	h1 {
 		margin-left: 30px;
+		margin-bottom: 20px;
 	}
-	ul {
+	textarea {
 		border: 1px solid #a7d7f9;
+		padding-top: 8px;
+		margin-left: 10px;
 	}
 	h6 {
-		margin-left: 30px;
+		margin-left: 10px;
 		margin-bottom: 0%;
-		margin-right: 83%;
-    	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
-    	padding: 10px;
 	}
+	a {
+		color: #221fde; 
+		text-decoration: none; 
+	   }
 	a:visited {
 		color: #500c7a; 
 	   }  
@@ -237,7 +249,7 @@ app.get('/contents/:contents_id', async function(req, res) {
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<h1>Редактирование содержимого темы ${thema.num_theme} ${thema.theme} <form method="post" action="/contents/${contents_id}/remove"></form></h1>
-		<h6><a style="color: #221fde" href="/">Содержание</a></h6>
+		<h6><a style="color: #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;" href="/">Содержание</a><a style=" #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;"></a></h6>
 		<form method="post" action="/contents/${contents_id}">
 		<div class="mb-3">	
 			<textarea class="form-control" id="exampleFormControlTextarea1" rows="25" type="text" name="text"  >${contents.text}</textarea>
@@ -265,34 +277,38 @@ app.get('/search', async function(req, res) {
 	<style >
 	h1 {
 		margin-left: 30px;
-		margin-top: 0%;
+		margin-bottom: 20px;
 	}
 	ul {
 		border: 1px solid #a7d7f9;
+		padding-top: 8px;
+		margin-left: 10px;
 	}
 	h6 {
-		margin-left: 30px;
+		margin-left: 10px;
 		margin-bottom: 0%;
-		margin-right: 83%;
-    	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
-    	padding: 10px;
 	}
 	p {
 		text-align:right;
 		margin-bottom: 0%;
 		margin-right: 2%;
 	}
+	a {
+		color: #221fde; 
+		text-decoration: none; 
+	   }
 	a:visited {
 		color: #500c7a; 
 	   }  
 	a:hover {
 		text-decoration: underline;
-	   } 
+	   }
 	</style>
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-			<h6><a style="color: #221fde" href="/">Содержание</a> <span>Поиск</span></h6>
+		<h1>Поиск</h1>	
+		<h6><a style="color: #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;" href="/">Содержание</a> <span style="padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;">Поиск</span><span <a style="color: #221fde; padding-top: 1.25em;  padding-left: 8px;padding-right: 8px;cursor: pointer; background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); background-repeat: no-repeat;background-repeat-x: no-repeat;background-repeat-y: no-repeat; background-size: 1px 100%;"></span></h6>
 			<ul>
 			<form method="get" action="/search">
 			<input type="text" name="thema_query" placeholder="Поисковой запрос" value="${thema_query ? thema_query : ''}"/>
