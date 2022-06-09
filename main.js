@@ -349,34 +349,44 @@ app.get('/thema_vers/:theme_id', async function(req, res) {
 	<style >
 	h1 {
 		margin-left: 30px;
-		margin-top: 0%;
+		margin-bottom: 20px;
 	}
 	ul {
 		border: 1px solid #a7d7f9;
+		padding-top: 8px;
+		margin-left: 10px;
 	}
 	h6 {
-		margin-left: 30px;
+		margin-left: 10px;
 		margin-bottom: 0%;
-    	background: linear-gradient(to top, #E6E6FA,#FFFFFF);
-    	padding: 10px;
 	}
-	p {
-		text-align:right;
-		margin-bottom: 0%;
-		margin-right: 2%;
-	}
+	a {
+		color: #221fde; 
+		text-decoration: none; 
+	   }
 	a:visited {
 		color: #500c7a; 
 	   }  
 	a:hover {
 		text-decoration: underline;
-	   } 
+	   }    
+	span {
+		padding-top: 1.25em;  
+		padding-left: 8px;
+		padding-right: 8px;
+		cursor: pointer; 
+		background-image: linear-gradient(to bottom,rgba(167,215,249,0) 0,#a7d7f9 100%); 
+		background-repeat: no-repeat;
+		background-repeat-x: no-repeat;
+		background-repeat-y: no-repeat; 
+		background-size: 1px 100%;
+	}
 	</style>
 	</head>
 		<body style="background-color: #faf9e1">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 		<h1>Тема:${thema.num_theme} ${thema.theme} </h1>
-			<h6><a style="color: #221fde" href="/">Содержание</a> <a style="color: #221fde" href="/thema_vers/${theme_id}">Версии страницы</a></h6>
+			<h6><span><a style="color: #221fde" href="/">Содержание</a></span> <span><a style="color: #221fde" href="/thema_vers/${theme_id}">Версии страницы</a></span><span></span></h6>
 			
 			<ul class="themes">
 			${themes.map(contents => `<div><a href="/content-thema/${thema.id}?time=${Date.parse(contents.time_vers)}">${contents.time_vers} </a>${contents.comment} </div>`).join('')}
